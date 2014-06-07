@@ -1,62 +1,36 @@
 -- Standard awesome library
 -- {{{ Imports
-local gears = require("gears")
-local awful = require("awful")
+gears = require("gears")
+awful = require("awful")
 awful.rules = require("awful.rules")
 require("awful.autofocus")
 -- Widget and layout library
-local wibox = require("wibox")
+wibox = require("wibox")
 -- Theme handling library
-local beautiful = require("beautiful")
+beautiful = require("beautiful")
 -- Notification library
-local naughty = require("naughty")
-local menubar = require("menubar")
-local vicious = require("vicious")
-local scratch = require("scratch")
+naughty = require("naughty")
+menubar = require("menubar")
+vicious = require("vicious")
+scratch = require("scratch")
+-- local
+utils = require("settings.utils")
+require("settings.errors")
+machine = require("settings.machine")
 -- }}}
 
 -- {{{ Autostart
-function run_once(cmd)
-  awful.util.spawn_with_shell("pgrep" .. cmd .. " > /dev/null || (" .. cmd .. " &)")
-end
-
-run_once("firefox")
-run_once("thunderbird")
-run_once("pidgin")
-
+-- require("settings/autostart" .. machine.suffix)
 -- }}}
 
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-    naughty.notify({ preset = naughty.config.presets.critical,
-                     title = "Oops, there were errors during startup!",
-                     text = awesome.startup_errors })
-end
 
--- Handle runtime errors after startup
-do
-    local in_error = false
-    awesome.connect_signal("debug::error", function (err)
-        -- Make sure we don't go into an endless error loop
-        if in_error then return end
-        in_error = true
-
-        naughty.notify({ preset = naughty.config.presets.critical,
-                         title = "Oops, an error happened!",
-                         text = err })
-        in_error = false
-    end)
-end
--- }}}
 
 -- {{{ Variable definitions
 home = os.getenv("HOME")
 confdir = home .. "/.config/awesome"
 scriptdir = confdir .. "/scripts/"
 themes = confdir .. "/themes"
-active_theme = themes .. "/powerarrow-sbr"
+active_theme = themes .. "/powerarrow-darker"
 -- Themes define colours, icons, and wallpapers
 beautiful.init(active_theme .. "/theme.lua")
 
@@ -71,14 +45,10 @@ tasks = terminal .. " -e htop "
 file_manager = "nautilus"
 
 -- Default modkey.
--- Usually, Mod4 is the key with a logo between Control and Alt.
--- If you do not like this or do not have such a key,
--- I suggest you to remap Mod4 to another key using xmodmap or other tools.
--- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 altkey = "Mod1"
 
--- Table of layouts to cover with awful.layout.inc, order matters.
+-- {{{ layouts
 local layouts =
 {
     awful.layout.suit.floating,
@@ -93,39 +63,6 @@ local layouts =
     awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier
 }
--- }}}
-
--- {{{ Wallpaper
-if beautiful.wallpaper then
-    for s = 1, screen.count() do
-        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
-    end
-end
--- configuration - edit to your liking
-wp_index = 1
-wp_timeout  = 3600
- 
--- setup the timer
-wp_timer = timer { timeout = wp_timeout }
-wp_timer:connect_signal("timeout", function()
- 
-  -- set wallpaper to current index
-  awful.util.spawn("random-wallpaper", false) 
-  -- gears.wallpaper.maximized( wp_path .. wp_files[wp_index] , s, true)
- 
-  -- stop the timer (we don't need multiple instances running at the same time)
-  wp_timer:stop()
- 
-  -- get next random index
-  -- wp_index = math.random( 1, #wp_files)
- 
-  --restart the timer
-  wp_timer.timeout = wp_timeout
-  wp_timer:start()
-end)
- 
--- initial start when rc.lua is first run
-wp_timer:start()
 -- }}}
 
 -- {{{ Tags
@@ -143,50 +80,13 @@ for s = 1, screen.count() do
 end
 -- }}}
 
--- {{{ Menu
--- Create a laucher widget and a main menu
-myaccessories = {
-    { "editor", gui_editor },
-    { "file manager", file_manager }
-}
-myinternet = {
-    { "browser", browser },
-    { "mail", mail },
-    { "chat", "pidgin" }
-}
-mygraphics = {
-    { "gimp", "gimp" },
-    { "inkscape", "inkscape" },
-}
-mydev = {
-    { "idea", "idea" }
-}
-mysystem = {
-    { "task manager", tasks }
-}
 
-myawesomemenu = {
-   { "wallpaper", "random-wallpaper" },
-   { "manual", terminal .. " -e man awesome" },
-   { "edit config", editor_cmd .. " " .. awesome.conffile },
-   { "restart", awesome.restart },
-   { "quit", awesome.quit }
-}
-
-mymainmenu = awful.menu({ items = {
-    { "accessories", myaccessories },
-    { "internet", myinternet },
-    { "dev", mydev },
-    { "office", myoffice },
-    { "graphics", mygraphics },
-    { "system", mysystem },
-    { "awesome", myawesomemenu, beautiful.awesome_icon },
-    { "open terminal", terminal }
-  }
-})
-
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                     menu = mymainmenu })
+-- {{{ Wallpaper
+if beautiful.wallpaper then
+    for s = 1, screen.count() do
+        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+    end
+end
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
@@ -198,264 +98,16 @@ coldef  = "</span>"
 colwhi  = "<span color='#b2b2b2'>"
 red = "<span color='#e54c62'>"
 
--- Textclock widget
-clockicon = wibox.widget.imagebox()
-clockicon:set_image(beautiful.widget_clock)
-mytextclock = awful.widget.textclock("%a %d %b  %H:%M")
-
--- Calendar attached to the textclock
-local os = os
-local string = string
-local table = table
-local util = awful.util
-
-char_width = nil
-text_color = theme.fg_normal or "#FFFFFF"
-today_color = theme.tasklist_fg_focus or "#FF7100"
-calendar_width = 21
-
-local calendar = nil
-local offset = 0
-
-local data = nil
-
-local function pop_spaces(s1, s2, maxsize)
-   local sps = ""
-   for i = 1, maxsize - string.len(s1) - string.len(s2) do
-      sps = sps .. " "
-   end
-   return s1 .. sps .. s2
-end
-
-local function create_calendar()
-   offset = offset or 0
-
-   local now = os.date("*t")
-   local cal_month = now.month + offset
-   local cal_year = now.year
-   if cal_month > 12 then
-      cal_month = (cal_month % 12)
-      cal_year = cal_year + 1
-   elseif cal_month < 1 then
-      cal_month = (cal_month + 12)
-      cal_year = cal_year - 1
-   end
-
-   local last_day = os.date("%d", os.time({ day = 1, year = cal_year,
-                                            month = cal_month + 1}) - 86400)
-   local first_day = os.time({ day = 1, month = cal_month, year = cal_year})
-   local first_day_in_week =
-      os.date("%w", first_day)
-   local result = "di lu ma me je ve sa\n"
-   for i = 1, first_day_in_week do
-      result = result .. "   "
-   end
-
-   local this_month = false
-   for day = 1, last_day do
-      local last_in_week = (day + first_day_in_week) % 7 == 0
-      local day_str = pop_spaces("", day, 2) .. (last_in_week and "" or " ")
-      if cal_month == now.month and cal_year == now.year and day == now.day then
-         this_month = true
-         result = result ..
-            string.format('<span weight="bold" foreground = "%s">%s</span>',
-                          today_color, day_str)
-      else
-         result = result .. day_str
-      end
-      if last_in_week and day ~= last_day then
-         result = result .. "\n"
-      end
-   end
-
-   local header
-   if this_month then
-      header = os.date("%a, %d %b %Y")
-   else
-      header = os.date("%B %Y", first_day)
-   end
-   return header, string.format('<span font="%s" foreground="%s">%s</span>',
-                                theme.font, text_color, result)
-end
-
-local function calculate_char_width()
-   return beautiful.get_font_height(theme.font) * 0.555
-end
-
-function hide()
-   if calendar ~= nil then
-      naughty.destroy(calendar)
-      calendar = nil
-      offset = 0
-   end
-end
-
-function show(inc_offset)
-   inc_offset = inc_offset or 0
-
-   local save_offset = offset
-   hide()
-   offset = save_offset + inc_offset
-
-   local char_width = char_width or calculate_char_width()
-   local header, cal_text = create_calendar()
-   calendar = naughty.notify({ title = header,
-                               text = cal_text,
-                               timeout = 0, hover_timeout = 0.5,
-                            })
-end
-
-mytextclock:connect_signal("mouse::enter", function() show(0) end)
-mytextclock:connect_signal("mouse::leave", hide)
-mytextclock:buttons(util.table.join( awful.button({ }, 1, function() show(-1) end),
-                                     awful.button({ }, 3, function() show(1) end)))
--- MEM widget
-memicon = wibox.widget.imagebox()
-memicon:set_image(beautiful.widget_mem)
-memwidget = wibox.widget.textbox()
-vicious.register(memwidget, vicious.widgets.mem, ' $2MB ', 13)
-
--- CPU widget
-cpuicon = wibox.widget.imagebox()
-cpuicon:set_image(beautiful.widget_cpu)
-cpuwidget = wibox.widget.textbox()
-vicious.register(cpuwidget, vicious.widgets.cpu, '<span background="#313131" rise="2000"> $1% </span>', 3)
-cpuicon:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn(tasks, false) end)))
-
--- Temp widget
-tempicon = wibox.widget.imagebox()
-tempicon:set_image(beautiful.widget_temp)
-tempicon:buttons(awful.util.table.join(awful.button({ }, 1, function () awful.util.spawn(terminal .. " -e sudo powertop ", false) end)))
-tempwidget = wibox.widget.textbox()
-vicious.register(tempwidget, vicious.widgets.thermal, ' $1°C ', 9, {"coretemp.0", "core"} )
-
--- /home fs widget
-fshicon = wibox.widget.imagebox()
-fshicon:set_image(beautiful.widget_hdd)
-fshwidget = wibox.widget.textbox()
-vicious.register(fshwidget, vicious.widgets.fs,
-function (widget, args)
-  if args["{/ used_p}"] >= 95 and args["{/ used_p}"] < 99 then
-    return '<span background="#313131" font="Terminus 13" rise="2000"> <span font="Terminus 9">' .. args["{/home used_p}"] .. '% </span></span>' 
-  elseif args["{/ used_p}"] >= 99 and args["{/ used_p}"] <= 100 then
-    naughty.notify({ title = "Attenzione", text = "Partizione /home esaurita!\nFa' un po' di spazio.",
-    timeout = 10,
-    position = "top_right",
-    fg = beautiful.fg_urgent,
-    bg = beautiful.bg_urgent })
-    return '<span background="#313131" font="Terminus 13" rise="2000"> <span font="Terminus 9">' .. args["{/ used_p}"] .. '% </span></span>' 
-  else
-    return '<span background="#313131" font="Terminus 13" rise="2000"> <span font="Terminus 9">' .. args["{/ used_p}"] .. '% </span></span>' 
-  end
-end, 600)
-
-
-local infos = nil
-
-function remove_info()
-    if infos ~= nil then 
-        naughty.destroy(infos)
-        infos = nil
-    end
-end
-
-function add_info()
-    remove_info()
-    local capi = {
-		mouse = mouse,
-		screen = screen
-	  }
-    local cal = awful.util.pread(scriptdir .. "dfs")
-    cal = string.gsub(cal, "          ^%s*(.-)%s*$", "%1")
-    infos = naughty.notify({
-        text = string.format('<span font_desc="%s">%s</span>', "Terminus", cal),
-      	timeout = 0,
-        position = "top_right",
-        margin = 10,
-        height = 170,
-        width = 585,
-        screen	= capi.mouse.screen
-    })
-end
-
-fshicon:connect_signal('mouse::enter', function () add_info() end)
-fshicon:connect_signal('mouse::leave', function () remove_info() end)
-
--- Battery widget
-baticon = wibox.widget.imagebox()
-baticon:set_image(beautiful.widget_battery)
-
-function batstate()
-
- local file = io.open("/sys/class/power_supply/BAT0/status", "r")
-
- if (file == nil) then
-   return "Cable plugged"
- end
-
- local batstate = file:read("*line")
- file:close()
-
- if (batstate == 'Discharging' or batstate == 'Charging') then
-   return batstate
- else
-   return "Fully charged"
- end
-end
-
-batwidget = wibox.widget.textbox()
-vicious.register(batwidget, vicious.widgets.bat,
-function (widget, args)
- -- plugged
- if (batstate() == 'Cable plugged') then
-   baticon:set_image(beautiful.widget_ac)
-   return '<span font="Terminus 12"> <span font="Terminus 9">AC </span></span>'
-   -- critical
- elseif (args[2] <= 5 and batstate() == 'Discharging') then
-   baticon:set_image(beautiful.widget_battery_empty)
-   naughty.notify({
-     text = "sto per spegnermi...",
-     title = "Carica quasi esaurita!",
-     position = "top_right",
-     timeout = 1,
-     fg="#000000",
-     bg="#ffffff",
-     screen = 1,
-     ontop = true,
-   })
-   -- low
- elseif (args[2] <= 10 and batstate() == 'Discharging') then
-   baticon:set_image(beautiful.widget_battery_low)
-   naughty.notify({
-     text = "attacca il cavo!",
-     title = "Carica bassa",
-     position = "top_right",
-     timeout = 1,
-     fg="#ffffff",
-     bg="#262729",
-     screen = 1,
-     ontop = true,
-   })
-  else baticon:set_image(beautiful.widget_battery)
- end
-   return '<span font="Terminus 12"> <span font="Terminus 9">' .. args[2] .. '% </span></span>'
-end, 1, 'BAT0')
-
--- Volume widget
-volicon = wibox.widget.imagebox()
-volicon:set_image(beautiful.widget_vol)
-volumewidget = wibox.widget.textbox()
-vicious.register(volumewidget, vicious.widgets.volume,  
-function (widget, args)
-  if (args[2] ~= "♩" ) then 
-      if (args[1] == 0) then volicon:set_image(beautiful.widget_vol_no)
-      elseif (args[1] <= 50) then  volicon:set_image(beautiful.widget_vol_low)
-      else volicon:set_image(beautiful.widget_vol)
-      end
-  else volicon:set_image(beautiful.widget_vol_mute) 
-  end
-  return '<span font="Terminus 12"> <span font="Terminus 9">' .. args[1] .. '% </span></span>'
-end, 1, "Master")
+-- {{{ Widgets
+require("widgets.clock")
+require("widgets.calendar")
+require("widgets.mem")
+require("widgets.cpu")
+require("widgets.temp")
+require("widgets.fs")
+require("widgets.battery")
+require("widgets.volume")
+-- }}}
 
 -- Separators
 spr = wibox.widget.textbox(' ')
@@ -566,8 +218,8 @@ for s = 1, screen.count() do
     right_layout:add(fshicon)
     right_layout:add(fshwidget)
     right_layout:add(arrl_dl)     
---    right_layout:add(baticon)
---    right_layout:add(batwidget)
+    right_layout:add(baticon)
+    right_layout:add(batwidget)
     right_layout:add(arrl)
     right_layout:add(mytextclock)
     right_layout:add(spr)
@@ -619,7 +271,6 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "z", function () mymainmenu:show() end),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "t", function () awful.client.swap.byidx(  1)    end),
@@ -754,17 +405,11 @@ awful.rules.rules = {
     { rule = { class = "pinentry" },
       properties = { floating = true } },
     { rule = { class = "gimp" },
-      properties = { floating = true } },
-    -- Set Firefox to always map on tags number 1 of screen 1.
-    { rule = { class = "Firefox" },
-       properties = { tag = tags[1][1] } },
-    { rule = { class = "Thunderbird" },
-       properties = { tag = tags[1][2] } },
-    { rule = { class = "jetbrains-idea" },
-        properties = { tag = tags[2][3] } },
-    { rule = { class = "Pidgin" },
-        properties = { tag = tags[1][3] } },
+      properties = { floating = true } }
 }
+
+-- load additionnal rules depending on machine
+awful.rules.rules = utils.array_concat(awful.rules.rules, require("settings.rules" .. machine.suffix))
 -- }}}
 
 -- {{{ Signals

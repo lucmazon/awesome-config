@@ -1,2 +1,5 @@
 *
+*.iml
+local.properties
+.idea/*
 !/.config/awesome/*

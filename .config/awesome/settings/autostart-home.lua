@@ -1,3 +1,1 @@
-utils.run_once("firefox")
-utils.run_once("thunderbird")
-utils.run_once("pidgin")
+utils.run_once("source " .. os.getenv("HOME") .. "/.screenlayout/default.sh")

@@ -109,7 +109,7 @@ require("widgets.volume")
 -- }}}
 
 -- Separators
-spr = wibox.widget.textbox(' ')
+spacewidget = wibox.widget.textbox(' ')
 arrl = wibox.widget.imagebox()
 arrl:set_image(beautiful.arrl)
 arrl_dl = wibox.widget.imagebox()
@@ -192,18 +192,19 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the upper left
     local left_layout = wibox.layout.fixed.horizontal()
-    left_layout:add(spr)
+    left_layout:add(spacewidget)
     left_layout:add(mytaglist[s])
     left_layout:add(mypromptbox[s])
-    left_layout:add(spr)
+    left_layout:add(spacewidget)
 
     -- Widgets that are aligned to the upper right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    right_layout:add(spr)
+    right_layout:add(spacewidget)
     right_layout:add(arrl)
-    right_layout:add(volicon)
-    right_layout:add(volumewidget)
+    right_layout:add(spacewidget)
+    right_layout:add(volume.bar)
+    right_layout:add(spacewidget)
     right_layout:add(arrl)
     right_layout:add(memicon)
     right_layout:add(memwidget)
@@ -221,7 +222,7 @@ for s = 1, screen.count() do
     right_layout:add(batwidget)
     right_layout:add(arrl)
     right_layout:add(mytextclock)
-    right_layout:add(spr)
+    right_layout:add(spacewidget)
     right_layout:add(arrl_ld)
     right_layout:add(mylayoutbox[s])
 
@@ -368,7 +369,26 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey            }, "p", function() awful.util.spawn(gui_editor)            end), -- # Programs # m-p # launch emacs
 
     -- Keybindings
-    awful.key({ modkey, "Control" }, "b", function() awful.util.spawn(scriptdir .. "keybindings.rb") end) -- # Programs # m-b # launch this popup
+    awful.key({ modkey, "Control" }, "b", function() awful.util.spawn(scriptdir .. "keybindings.rb") end), -- # Programs # m-b # launch this popup
+
+    awful.key({ }, "XF86AudioRaiseVolume", function()
+        awful.util.spawn("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "+")
+        vicious.force({ alsawidget.bar })
+        alsawidget.notify()
+        end),
+    awful.key({ }, "XF86AudioLowerVolume", function()
+        awful.util.spawn("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "-")
+        vicious.force({ alsawidget.bar })
+        alsawidget.notify()
+    end),
+    awful.key({ }, "XF86AudioMute", function()
+        awful.util.spawn("amixer sset " .. alsawidget.channel .. " toggle")
+        -- The 2 following lines were needed at least on my configuration, otherwise it would get stuck muted
+        awful.util.spawn("amixer sset " .. "Speaker" .. " unmute")
+        awful.util.spawn("amixer sset " .. "Headphone" .. " unmute")
+        vicious.force({ alsawidget.bar })
+        alsawidget.notify()
+    end)
 )
 
 clientkeys = awful.util.table.join(

@@ -26,7 +26,7 @@ vicious.register(batwidget, vicious.widgets.bat,
     -- plugged
         if (batstate() == 'Cable plugged') then
             baticon:set_image(beautiful.widget_ac)
-            return '<span font="Terminus 12"> <span font="Terminus 9">AC </span></span>'
+            return '<span font="Terminus 12" rise="1000"> <span font="Terminus 9">AC </span></span>'
             -- critical
         elseif (args[2] <= 5 and batstate() == 'Discharging') then
             baticon:set_image(beautiful.widget_battery_empty)
@@ -55,5 +55,5 @@ vicious.register(batwidget, vicious.widgets.bat,
             })
         else baticon:set_image(beautiful.widget_battery)
         end
-        return '<span font="Terminus 12"> <span font="Terminus 9">' .. args[2] .. '% </span></span>'
+        return '<span font="Terminus 12" rise="1000"> <span font="Terminus 9">' .. args[2] .. '% </span></span>'
     end, 1, 'BAT0')

@@ -5,16 +5,16 @@ fshwidget = wibox.widget.textbox()
 vicious.register(fshwidget, vicious.widgets.fs,
     function (widget, args)
         if args["{/ used_p}"] >= 95 and args["{/ used_p}"] < 99 then
-            return '<span background="#313131" font="Terminus 13" rise="2000"> <span font="Terminus 9">' .. args["{/home used_p}"] .. '% </span></span>'
+            return '<span background="#313131" font="Terminus 13" rise="1000"> <span font="Terminus 9">' .. args["{/home used_p}"] .. '% </span></span>'
         elseif args["{/ used_p}"] >= 99 and args["{/ used_p}"] <= 100 then
             naughty.notify({ title = "Attenzione", text = "Partizione /home esaurita!\nFa' un po' di spazio.",
                 timeout = 10,
                 position = "top_right",
                 fg = beautiful.fg_urgent,
                 bg = beautiful.bg_urgent })
-            return '<span background="#313131" font="Terminus 13" rise="2000"> <span font="Terminus 9">' .. args["{/ used_p}"] .. '% </span></span>'
+            return '<span background="#313131" font="Terminus 13" rise="1000"> <span font="Terminus 9">' .. args["{/ used_p}"] .. '% </span></span>'
         else
-            return '<span background="#313131" font="Terminus 13" rise="2000"> <span font="Terminus 9">' .. args["{/ used_p}"] .. '% </span></span>'
+            return '<span background="#313131" font="Terminus 13" rise="1000"> <span font="Terminus 9">' .. args["{/ used_p}"] .. '% </span></span>'
         end
     end, 600)
 

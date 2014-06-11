@@ -106,6 +106,7 @@ require("widgets.temp")
 require("widgets.fs")
 require("widgets.battery")
 require("widgets.volume")
+require("widgets.hudson")
 -- }}}
 
 -- Separators
@@ -201,6 +202,10 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(spacewidget)
+    if machine.machine == "work" then
+        right_layout:add(arrl)
+        right_layout:add(hudsonwidget)
+    end
     right_layout:add(arrl)
     right_layout:add(spacewidget)
     right_layout:add(volume.bar)
@@ -217,10 +222,11 @@ for s = 1, screen.count() do
     right_layout:add(arrl_ld)
     right_layout:add(fshicon)
     right_layout:add(fshwidget)
-    right_layout:add(arrl_dl)     
+    right_layout:add(arrl_dl)
     right_layout:add(baticon)
     right_layout:add(batwidget)
     right_layout:add(arrl)
+    right_layout:add(spacewidget)
     right_layout:add(mytextclock)
     right_layout:add(spacewidget)
     right_layout:add(arrl_ld)

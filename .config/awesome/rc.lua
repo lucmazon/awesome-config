@@ -31,7 +31,7 @@ scriptdir = confdir .. "/scripts/"
 themes = confdir .. "/themes"
 active_theme = themes .. "/powerarrow-darker"
 -- Themes define colours, icons, and wallpapers
-beautiful.init(active_theme .. "/theme.lua")
+beautiful.init(confdir .. "/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "terminator"
@@ -67,7 +67,7 @@ local layouts =
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {
-    names = { "⠖", "⠷", "⢟", "⣑"},
+    names = { "⡧", "⠷", "⢟", "⣑", "⡷", "⡸", "⡹", "⡺", "⠜"},
     -- ⡠ ⡡ ⡢ ⡣ ⡤ ⡥ ⡦ ⡧ ⡨ ⡩ ⡪ ⡫ ⡬ ⡭ ⡮ ⡯ ⡰ ⡱ ⡲ ⡳ ⡴ ⡵ ⡶ ⡷ ⡸ ⡹ ⡺ ⡻ ⡼ ⡽ ⡾ ⡿
     -- ⠁ ⠂ ⠃ ⠄ ⠅ ⠆ ⠇ ⠈ ⠉ ⠊ ⠋ ⠌ ⠍ ⠎ ⠏ ⠐ ⠑ ⠒ ⠓ ⠔ ⠕ ⠖ ⠗ ⠘ ⠙ ⠚ ⠛ ⠜ ⠝ ⠞ ⠟
     -- ⢀ ⢁ ⢂ ⢃ ⢄ ⢅ ⢆ ⢇ ⢈ ⢉ ⢊ ⢋ ⢌ ⢍ ⢎ ⢏ ⢐ ⢑ ⢒ ⢓ ⢔ ⢕ ⢖ ⢗ ⢘ ⢙ ⢚ ⢛ ⢜ ⢝ ⢞ ⢟
@@ -106,7 +106,7 @@ require("widgets.temp")
 require("widgets.fs")
 require("widgets.battery")
 require("widgets.volume")
-require("widgets.hudson")
+if machine.machine == 'work' then require("widgets.hudson") end
 -- }}}
 
 -- Separators
@@ -297,10 +297,8 @@ root.buttons(awful.util.table.join(
 
 -- Bepoified
 local bepo_numkeys = {
-    -- bépo à 4 touches +-/*
-    [0]="at", "plus", "minus", "slash", "asterisk"
     -- This is real bepo
-    --   [0]="asterisk", "quotedbl", "guillemotleft", "guillemotright", "parenleft", "parenright", "at", "plus", "minus", "slash"
+      [0]="asterisk", "quotedbl", "guillemotleft", "guillemotright", "parenleft", "parenright", "at", "plus", "minus", "slash"
     -- This is for bepo-sbr
     -- [0]="asterisk", "quotedbl", "less", "greater", "parenleft", "parenright", "at", "plus", "minus", "slash"
 }

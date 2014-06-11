@@ -1,0 +1,16 @@
+#! /usr/bin/env ruby
+
+require 'fileutils'
+
+basedir = ENV['HOME'] + "/.config/awesome/wallpapers/"
+current = basedir + "current"
+
+if File.exists? current
+  candidates = Dir[basedir + "*"].reject do |file|
+    file == current or FileUtils.cmp(file, current)
+  end
+else
+  candidates = Dir[basedir + "*"]
+end
+
+FileUtils.cp(candidates.sample, current)

@@ -67,10 +67,7 @@ local layouts =
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {
-    names = { "⡧", "⠷", "⢟", "⣑", "⡷", "⡸", "⡹", "⡺", "⠜"},
-    -- ⡠ ⡡ ⡢ ⡣ ⡤ ⡥ ⡦ ⡧ ⡨ ⡩ ⡪ ⡫ ⡬ ⡭ ⡮ ⡯ ⡰ ⡱ ⡲ ⡳ ⡴ ⡵ ⡶ ⡷ ⡸ ⡹ ⡺ ⡻ ⡼ ⡽ ⡾ ⡿
-    -- ⠁ ⠂ ⠃ ⠄ ⠅ ⠆ ⠇ ⠈ ⠉ ⠊ ⠋ ⠌ ⠍ ⠎ ⠏ ⠐ ⠑ ⠒ ⠓ ⠔ ⠕ ⠖ ⠗ ⠘ ⠙ ⠚ ⠛ ⠜ ⠝ ⠞ ⠟
-    -- ⢀ ⢁ ⢂ ⢃ ⢄ ⢅ ⢆ ⢇ ⢈ ⢉ ⢊ ⢋ ⢌ ⢍ ⢎ ⢏ ⢐ ⢑ ⢒ ⢓ ⢔ ⢕ ⢖ ⢗ ⢘ ⢙ ⢚ ⢛ ⢜ ⢝ ⢞ ⢟
+    names = { "⠂", "⠆", "⠒", "⠲", "⠢", "⠖", "⠶", "⠦", "⠔" },
     layout = { layouts[3], layouts[3], layouts[3], layouts[6] }
 }
 for s = 1, screen.count() do

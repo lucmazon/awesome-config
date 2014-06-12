@@ -479,7 +479,7 @@ awful.rules.rules = {
 }
 
 -- load additionnal rules depending on machine
-awful.rules.rules = utils.array_concat(awful.rules.rules, require("settings.rules" .. machine.suffix))
+-- awful.rules.rules = utils.array_concat(awful.rules.rules, require("settings.rules" .. machine.suffix))
 -- }}}
 
 -- {{{ Signals

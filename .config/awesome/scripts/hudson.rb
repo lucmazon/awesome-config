@@ -33,7 +33,14 @@ if (building)
   seconds = max_remaining % 60
   minutes = (max_remaining / 60) % 60
 
-  result = format("%02dmn%02ds", minutes, seconds) #=> "15mn5s"
+  if max_remaining < 0
+    result = "N/A"
+  else
+    seconds = max_remaining % 60
+    minutes = (max_remaining / 60) % 60
+
+    result = format("%02dmn%02ds", minutes, seconds) #=> "15mn5s"
+  end
 
   puts "<span color=\"red\"> b (#{result}) </span>"
 else

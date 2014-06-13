@@ -4,3 +4,6 @@
 [submodule ".config/awesome/tyrannical"]
 	path = .config/awesome/tyrannical
 	url = https://github.com/Elv13/tyrannical
+[submodule ".config/awesome/vicious"]
+	path = .config/awesome/vicious
+	url = http://git.sysphere.org/vicious

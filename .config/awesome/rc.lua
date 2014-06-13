@@ -12,6 +12,8 @@ beautiful = require("beautiful")
 naughty = require("naughty")
 menubar = require("menubar")
 vicious = require("vicious")
+-- Tyrannical
+tyrannical = require("tyrannical")
 -- local
 utils = require("settings.utils")
 require("settings.errors")
@@ -64,16 +66,100 @@ local layouts =
 }
 -- }}}
 
+-- First, set some settings
+tyrannical.settings.default_layout = awful.layout.suit.tile
+tyrannical.settings.mwfact = 0.66
+
+-- Setup some tags
+tyrannical.tags = {
+    {
+        name = "Browser", -- Call the tag "browser"
+        init = true, -- Load the tag on startup
+        screen = 1, -- Create this tag on screen 1
+        selected = true,
+        class = { --Accept the following classes
+            "Firefox", "Chromium"
+        }
+    },
+    {
+        name = "Mail",
+        init = false,
+        exclusive = true,
+        screen = 1,
+        layout = awful.layout.suit.max,
+        volatile = true,
+        class = {
+            "Thunderbird"
+        }
+    },
+    {
+        name = "Pidgin",
+        init = true,
+        exclusive = true,
+        screen = 1,
+        layout = awful.layout.suit.tile.left,
+        mwfact = 0.8,
+        exec_once = {"pidgin"}, --When the tag is accessed for the first time, execute this command
+        class = {
+            "Pidgin"
+        }
+    },
+    {
+        name = "Dev",
+        init = true,
+        exclusive = true,
+        screen = {1,2},
+        layout = awful.layout.suit.max,
+        class ={
+            "jetbrains-idea"
+        }
+    },
+    {
+        name = "Emacs",
+        init = false, -- This tag wont be created at startup, but will be when one of the
+                             -- client in the "class" section will start. It will be created on
+                             -- the client startup screen
+        volatile = true, -- destroyed when last client is closed
+        exclusive = true,
+        layout = awful.layout.suit.max,
+        class = {
+            "emacs"
+        }
+    },
+}
+
+-- Ignore the tag "exclusive" property for the following clients (matched by classes)
+tyrannical.properties.intrusive = {
+    "terminator",
+}
+
+-- Ignore the tiled layout for the matching clients
+tyrannical.properties.floating = {
+
+}
+
+-- Make the matching clients (by classes) on top of the default layout
+tyrannical.properties.ontop = {
+    "Xephyr" , "ksnapshot" , "kruler"
+}
+
+-- Force the matching clients (by classes) to be centered on the screen on init
+tyrannical.properties.centered = {
+    "kcalc"
+}
+
+-- }}}
+
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
-tags = {
-    names = { "⠂", "⠆", "⠒", "⠲", "⠢", "⠖", "⠶", "⠦", "⠔" },
-    layout = { layouts[3], layouts[3], layouts[3], layouts[6] }
-}
-for s = 1, screen.count() do
-    -- Each screen has its own tag table.
-    tags[s] = awful.tag(tags.names, s, tags.layout)
-end
+--tags = {
+--    names = { "⠂", "⠆", "⠒", "⠲", "⠢", "⠖", "⠶", "⠦", "⠔" },
+--    layout = { layouts[3], layouts[3], layouts[3], layouts[6] }
+--}
+--for s = 1, screen.count() do
+--    -- Each screen has its own tag table.
+--    tags[s] = awful.tag(tags.names, s, tags.layout)
+--end
 -- }}}
 
 
@@ -260,7 +346,7 @@ mysystem = {
     { "task manager", tasks }
 }
 
-yawesomemenu = {
+myawesomemenu = {
     { "wallpaper", "random-wallpaper" },
     { "manual", terminal .. " -e man awesome" },
     { "edit config", editor_cmd .. " " .. awesome.conffile },
@@ -304,7 +390,25 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ), -- # Tags # m-left # next tag
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ), -- # Tags # m-right # previous tag
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore), -- # Tags # m-Esc # previous tag in history
-
+    awful.key({ modkey,           }, "a", -- # Tags # m-a # add tag
+        function()
+        awful.prompt.run({ prompt = "New tag name: " },
+                    mypromptbox[mouse.screen].widget,
+                    function(new_name)
+                        if not new_name or #new_name == 0 then
+                            return
+                        else
+                            props = {selected = true}
+                            if tyrannical.tags_by_name[new_name] then
+                               props = tyrannical.tags_by_name[new_name]
+                            end
+                            t = awful.tag.add(new_name, props)
+                            awful.tag.viewonly(t)
+                        end
+                    end
+                    )
+        end), -- # Tags # m-d # delete tag
+    awful.key({ modkey,           }, "d",      function() awful.tag.delete() end), -- # Tags # m-d # delete tag
     awful.key({ modkey,           }, "t", -- # Clients # m-t # next client
         function ()
             awful.client.focus.byidx( 1)

@@ -38,10 +38,11 @@ else
 end
 --}}}
 
-bg_focus = "#313131"
-fg_focus = "#33CCFF"
+dark_gray = "#111111"
+medium_gray = "#414141"
+light_blue = "#33CCFF"
+light_pink = "#FF5F84"
 white = "#FFFFFF"
-
 
 theme.font                          = "Terminus 9"
 theme.fg_normal                     = "#DDDDFF"
@@ -52,14 +53,16 @@ theme.bg_focus                      = "#313131"
 theme.bg_urgent                     = "#1A1A1A"
 theme.border_width                  = "2"
 theme.border_normal                 = "#3F3F3F"
-theme.border_focus                  = fg_focus
+theme.border_focus                  = light_blue
 theme.border_marked                 = "#00CC99"
 theme.titlebar_bg_focus             = white
 theme.titlebar_bg_normal            = white
-theme.taglist_bg_focus              = bg_focus
-theme.taglist_fg_focus              = fg_focus
-theme.tasklist_bg_focus             = bg_focus
-theme.tasklist_fg_focus             = fg_focus
+theme.taglist_bg_focus              = medium_gray
+theme.taglist_fg_focus              = light_blue
+theme.tasklist_bg_focus             = medium_gray
+theme.tasklist_fg_focus             = light_blue
+theme.tasklist_bg_normal            = dark_gray
+theme.tasklist_fg_normal            = light_pink
 theme.textbox_widget_margin_top     = 1
 theme.notify_fg                     = theme.fg_normal
 theme.notify_bg                     = theme.bg_normal
@@ -69,6 +72,7 @@ theme.awful_widget_margin_top       = 2
 theme.mouse_finder_color            = "#CC9393"
 theme.menu_height                   = "16"
 theme.menu_width                    = "140"
+theme.bg_systray                    = theme.bg_normal
 
 theme.menu_submenu_icon             = themedir .. "/icons/submenu.png"
 theme.taglist_squares_sel           = themedir .. "/icons/square_sel.png"

@@ -48,6 +48,8 @@ file_manager = "nautilus"
 -- Default modkey.
 modkey = "Mod4"
 altkey = "Mod1"
+ctrlkey = "Control"
+shiftkey = "Shift"
 
 -- {{{ layouts
 local layouts =
@@ -68,7 +70,7 @@ local layouts =
 
 -- First, set some settings
 tyrannical.settings.default_layout = awful.layout.suit.tile
-tyrannical.settings.mwfact = 0.66
+tyrannical.settings.mwfact = 0.70
 
 -- Setup some tags
 tyrannical.tags = {
@@ -105,11 +107,18 @@ tyrannical.tags = {
         }
     },
     {
+        name = "Term",
+        init = true,
+        exclusive = true,
+        screen = {1,2 },
+        class = { "terminator" }
+    },
+    {
         name = "Dev",
         init = true,
         exclusive = true,
         screen = {1,2},
-        layout = awful.layout.suit.max,
+        layout = awful.layout.suit.tile,
         class ={
             "jetbrains-idea"
         }
@@ -136,6 +145,10 @@ tyrannical.properties.intrusive = {
 -- Ignore the tiled layout for the matching clients
 tyrannical.properties.floating = {
 
+}
+
+tyrannical.properties.slave = {
+    "terminator"
 }
 
 -- Make the matching clients (by classes) on top of the default layout
@@ -391,22 +404,40 @@ tag_keys = {
     {"t","s","r","n","v","d","l","j"}  -- right screen
 }
 
-switch_to_tag = function (screen_number, tag_index)
+view_only_tag = function (screen_number, tag_index)
     awful.tag.viewonly(awful.tag.gettags(screen_number)[tag_index])
 end
 
-tag_mode = {}
+view_toggle_tag = function (screen_number, tag_index)
+    awful.tag.viewtoggle(awful.tag.gettags(screen_number)[tag_index])
+end
+
+move_to_tag = function (screen_number, tag_index)
+    awful.client.movetotag(awful.tag.gettags(screen_number)[tag_index])
+end
+
+toggle_tag = function (screen_number, tag_index)
+    awful.client.toggletag(awful.tag.gettags(screen_number)[tag_index])
+end
+
+view_only_tag_mode = {}
+view_toggle_tag_mode = {}
+move_to_tag_mode = {}
+toggle_tag_mode = {}
 for screen_number, left_keys in ipairs(tag_keys) do
     for tag_index, key in ipairs(left_keys) do
-        tag_mode[key] = function(c) switch_to_tag(screen_number,tag_index) end
+        view_only_tag_mode[key] = function(c) view_only_tag(screen_number,tag_index) end
+        view_toggle_tag_mode[key] = function(c) view_toggle_tag(screen_number,tag_index) end
+        move_to_tag_mode[key] = function(c) move_to_tag(screen_number,tag_index) end
+        toggle_tag_mode[key] = function(c) toggle_tag(screen_number,tag_index) end
     end
 end
 
 globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ), -- # Tags # m-left # next tag
-    awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ), -- # Tags # m-right # previous tag
-    awful.key({ modkey,           }, "Escape", awful.tag.history.restore), -- # Tags # m-Esc # previous tag in history
-    awful.key({ modkey,           }, "a", -- # Tags # m-a # add tag
+    awful.key({ modkey }, "Left",   awful.tag.viewprev       ), -- # Tags # m-left # next tag
+    awful.key({ modkey }, "Right",  awful.tag.viewnext       ), -- # Tags # m-right # previous tag
+    awful.key({ modkey }, "Escape", awful.tag.history.restore), -- # Tags # m-Esc # previous tag in history
+    awful.key({ modkey }, "a", -- # Tags # m-a # add tag
         function()
         awful.prompt.run({ prompt = "New tag name: " },
                     mypromptbox[mouse.screen].widget,
@@ -423,26 +454,34 @@ globalkeys = awful.util.table.join(
                         end
                     end
                     )
-        end), -- # Tags # m-d # delete tag
-    awful.key({ modkey,           }, "d",      function() awful.tag.delete() end), -- # Tags # m-d # delete tag
-    awful.key({ modkey,           }, "t", -- # Clients # m-t # next client
+        end), -- # Tags # m-d # delete tag -> only those not registered by tyrannical
+    awful.key({ modkey }, "d",      function()
+        tag_name = awful.tag.gettags(mouse.screen)[awful.tag.getidx()].name
+        if tyrannical.tags_by_name[tag_name] then
+            naughty.notify({text = "not allowed"})
+        else
+            awful.tag.delete()
+        end
+--        awful.tag.delete()
+    end), -- # Tags # m-d # delete tag
+    awful.key({ modkey }, "t", -- # Clients # m-t # next client
         function ()
             awful.client.focus.byidx( 1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "s", -- # Clients # m-s # previous client
+    awful.key({ modkey }, "s", -- # Clients # m-s # previous client
         function ()
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
 
     -- Layout manipulation
-    awful.key({ modkey, "Shift"   }, "t", function () awful.client.swap.byidx(  1)    end), -- # Layouts manipulation # m-S-t # swap client forward
-    awful.key({ modkey, "Shift"   }, "s", function () awful.client.swap.byidx( -1)    end), -- # Layouts manipulation # m-S-s # swap client backward
-    awful.key({ modkey, "Control" }, "t", function () awful.screen.focus_relative( 1) end), -- # Layouts manipulation # m-C-t # mouse to next screen
-    awful.key({ modkey, "Control" }, "s", function () awful.screen.focus_relative(-1) end), -- # Layouts manipulation # m-C-s # mouse to previous screen
-    awful.key({ modkey,           }, "v", awful.client.urgent.jumpto),
-    awful.key({ modkey,           }, "Tab", -- # Layouts manipulation # m-Tab # previous client in history
+    awful.key({ modkey, shiftkey }, "t", function () awful.client.swap.byidx(  1)    end), -- # Layouts manipulation # m-S-t # swap client forward
+    awful.key({ modkey, shiftkey }, "s", function () awful.client.swap.byidx( -1)    end), -- # Layouts manipulation # m-S-s # swap client backward
+    awful.key({ modkey, ctrlkey  }, "t", function () awful.screen.focus_relative( 1) end), -- # Layouts manipulation # m-C-t # mouse to next screen
+    awful.key({ modkey, ctrlkey  }, "s", function () awful.screen.focus_relative(-1) end), -- # Layouts manipulation # m-C-s # mouse to previous screen
+    awful.key({ modkey,          }, "v", awful.client.urgent.jumpto),
+    awful.key({ modkey,          }, "Tab", -- # Layouts manipulation # m-Tab # previous client in history
         function ()
             awful.client.focus.history.previous()
             if client.focus then
@@ -451,25 +490,25 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal)   end), -- # Standard # m-Enter # spawn terminal
-    awful.key({ modkey, "Control" }, "o",                                   awesome.restart), -- # Standard # m-C-o # restart awesome
-    awful.key({ modkey, "Shift"   }, "a",                                      awesome.quit), -- # Standard # m-S-a # quit awesome
+    awful.key({ modkey,          }, "Return", function () awful.util.spawn(terminal)   end), -- # Standard # m-Enter # spawn terminal
+    awful.key({ modkey, ctrlkey  }, "o",                                   awesome.restart), -- # Standard # m-C-o # restart awesome
+    awful.key({ modkey, shiftkey }, "a",                                      awesome.quit), -- # Standard # m-S-a # quit awesome
 
-    awful.key({ modkey,           }, "c",     function () awful.tag.incmwfact( 0.05)    end), -- # Standard # m-c # increase master size
-    awful.key({ modkey,           }, "r",     function () awful.tag.incmwfact(-0.05)    end), -- # Standard # m-r # decrease master size
-    awful.key({ modkey, "Shift"   }, "c",     function () awful.tag.incnmaster( 1)      end), -- # Standard # m-S-c # increase nb columns master
-    awful.key({ modkey, "Shift"   }, "r",     function () awful.tag.incnmaster(-1)      end), -- # Standard # m-S-r # decrease nb columns master
-    awful.key({ modkey, "Control" }, "c",     function () awful.tag.incncol( 1)         end), -- # Standard # m-C-c # increase nb of columns windows
-    awful.key({ modkey, "Control" }, "r",     function () awful.tag.incncol(-1)         end), -- # Standard # m-C-r # decrease nb of columns windows
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end), -- # Standard # m-space # next layout
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end), -- # Standard # m-space # previous layout
+    awful.key({ modkey,          }, "c",     function () awful.tag.incmwfact( 0.05)    end), -- # Standard # m-c # increase master size
+    awful.key({ modkey,          }, "r",     function () awful.tag.incmwfact(-0.05)    end), -- # Standard # m-r # decrease master size
+    awful.key({ modkey, shiftkey }, "c",     function () awful.tag.incnmaster( 1)      end), -- # Standard # m-S-c # increase nb columns master
+    awful.key({ modkey, shiftkey }, "r",     function () awful.tag.incnmaster(-1)      end), -- # Standard # m-S-r # decrease nb columns master
+    awful.key({ modkey, ctrlkey  }, "c",     function () awful.tag.incncol( 1)         end), -- # Standard # m-C-c # increase nb of columns windows
+    awful.key({ modkey, ctrlkey  }, "r",     function () awful.tag.incncol(-1)         end), -- # Standard # m-C-r # decrease nb of columns windows
+    awful.key({ modkey,          }, "space", function () awful.layout.inc(layouts,  1) end), -- # Standard # m-space # next layout
+    awful.key({ modkey, shiftkey }, "space", function () awful.layout.inc(layouts, -1) end), -- # Standard # m-space # previous layout
 
-    awful.key({ modkey, "Control" }, "'",                              awful.client.restore), -- # Standard # m-C-' # restore client
+    awful.key({ modkey, ctrlkey  }, "'",                              awful.client.restore), -- # Standard # m-C-' # restore client
 
     -- Prompt
-    awful.key({ modkey            }, "o",   function () mypromptbox[mouse.screen]:run() end), -- # Prompt # m-o # run shell command
+    awful.key({ modkey           }, "o",   function () mypromptbox[mouse.screen]:run() end), -- # Prompt # m-o # run shell command
 
-    awful.key({ modkey            }, "y", -- # Prompt # m-y # run lua code
+    awful.key({ modkey           }, "y", -- # Prompt # m-y # run lua code
         function ()
             awful.prompt.run({ prompt = "Run Lua code: " },
                 mypromptbox[mouse.screen].widget,
@@ -478,19 +517,19 @@ globalkeys = awful.util.table.join(
         end),
 
     -- Menubar
-    awful.key({ modkey            }, "j", function() menubar.show()                     end), -- # Prompt # m-j # show menubar
+    awful.key({ modkey           }, "j", function() menubar.show()                     end), -- # Prompt # m-j # show menubar
 
     -- Lock
-    awful.key({ modkey, "Control" }, "l", function() awful.util.spawn("slock")          end), -- # System # m-C-l # lock screen
+    awful.key({ modkey, ctrlkey  }, "l", function() awful.util.spawn("slock")          end), -- # System # m-C-l # lock screen
 
     -- Shutdown dialog
-    awful.key({ modkey, "Control" }, "q", function() awful.util.spawn(scriptdir .. "shutdown_dialog") end), -- # System # m-C-q # shutdown dialog
+    awful.key({ modkey, ctrlkey  }, "q", function() awful.util.spawn(scriptdir .. "shutdown_dialog") end), -- # System # m-C-q # shutdown dialog
 
     -- Editor (gui)
-    awful.key({ modkey            }, "p", function() awful.util.spawn(gui_editor)            end), -- # Programs # m-p # launch emacs
+    awful.key({ modkey           }, "p", function() awful.util.spawn(gui_editor)            end), -- # Programs # m-p # launch emacs
 
     -- Keybindings
-    awful.key({ modkey, "Control" }, "b", function() awful.util.spawn(scriptdir .. "keybindings.rb") end), -- # Programs # m-b # launch this popup
+    awful.key({ modkey, ctrlkey  }, "b", function() naughty.notify({text = awful.util.pread(scriptdir .. "keybindings.rb")}) end), -- # Programs # m-b # launch this popup
 
     awful.key({ }, "XF86AudioRaiseVolume", function()
         awful.util.spawn("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "+")
@@ -511,12 +550,38 @@ globalkeys = awful.util.table.join(
         alsawidget.notify()
     end),
 
-    awful.key({modkey}, "f", function(c)
+
+    -- KEYGRABBER - Modal keybinding
+    awful.key({ modkey }, ".", function(c)
         keygrabber.run(function(mod, key, event)
             if event == "release" then return true end
             keygrabber.stop()
-            naughty.notify({text = key})
-            if tag_mode[key] then tag_mode[key](c) end
+            if view_only_tag_mode[key] then view_only_tag_mode[key](c) end
+            return true
+        end)
+    end),
+    awful.key({ modkey, ctrlkey }, ".", function(c)
+        keygrabber.run(function(mod, key, event)
+            if event == "release" then return true end
+            keygrabber.stop()
+            if view_toggle_tag_mode[key] then view_toggle_tag_mode[key](c) end
+            return true
+        end)
+    end),
+    awful.key({ modkey, altkey }, ".", function(c)
+        keygrabber.run(function(mod, key, event)
+            if event == "release" then return true end
+            keygrabber.stop()
+            naughty.notify({text = "hoho"})
+            if move_to_tag_mode[key] then move_to_tag_mode[key](c) end
+            return true
+        end)
+    end),
+    awful.key({ modkey, ctrlkey, altkey }, ".", function(c)
+        keygrabber.run(function(mod, key, event)
+            if event == "release" then return true end
+            keygrabber.stop()
+            if toggle_tag_mode[key] then toggle_tag_mode[key](c) end
             return true
         end)
     end)
@@ -525,8 +590,8 @@ globalkeys = awful.util.table.join(
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "e",      function (c) c.fullscreen = not c.fullscreen  end), -- # Clients # m-e # toggle fullscreen
     awful.key({ modkey            }, "k",      function (c) c:kill()                         end), -- # Clients # m-k # kill client
-    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ), -- # Clients # m-C-space # toggle floating
-    awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end), -- # Clients # m-C-Enter # swap client with master
+    awful.key({ modkey, ctrlkey }, "space",  awful.client.floating.toggle                     ), -- # Clients # m-C-space # toggle floating
+    awful.key({ modkey, ctrlkey }, "Return", function (c) c:swap(awful.client.getmaster()) end), -- # Clients # m-C-Enter # swap client with master
     awful.key({ modkey,           }, "l",      awful.client.movetoscreen                        ), -- # Clients # m-l # move to next screen
     awful.key({ modkey,           }, "w",      function (c) c.ontop = not c.ontop            end), -- # Clients # m-w # place client on top
     awful.key({ modkey,           }, "'",                                                          -- # Clients # m-' # minimize client
@@ -541,43 +606,6 @@ clientkeys = awful.util.table.join(
             c.maximized_vertical   = not c.maximized_vertical
         end)
 )
-
--- Bind all key numbers to tags.
--- Be careful: we use keycodes to make it works on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
-for i = 1, 9 do
-    globalkeys = awful.util.table.join(globalkeys,
-        awful.key({ modkey }, bepo_numkeys[i],
-            function ()
-                local screen = mouse.screen
-                local tag = awful.tag.gettags(screen)[i]
-                if tag then
-                    awful.tag.viewonly(tag)
-                end
-            end),
-        awful.key({ modkey, "Control" }, bepo_numkeys[i],
-            function ()
-                local screen = mouse.screen
-                local tag = awful.tag.gettags(screen)[i]
-                if tag then
-                    awful.tag.viewtoggle(tag)
-                end
-            end),
-        awful.key({ modkey, "Shift" }, bepo_numkeys[i],
-            function ()
-                local tag = awful.tag.gettags(client.focus.screen)[i]
-                if client.focus and tag then
-                    awful.client.movetotag(tag)
-                end
-            end),
-        awful.key({ modkey, "Control", "Shift" }, bepo_numkeys[i],
-            function ()
-                local tag = awful.tag.gettags(client.focus.screen)[i]
-                if client.focus and tag then
-                    awful.client.toggletag(tag)
-                end
-            end))
-end
 
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end), -- # Mouse # hover # focus hovered client
@@ -607,10 +635,6 @@ awful.rules.rules = {
     { rule = { class = "meld" },
       properties = { floating = true } }
 }
-
--- load additionnal rules depending on machine
--- awful.rules.rules = utils.array_concat(awful.rules.rules, require("settings.rules" .. machine.suffix))
--- }}}
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.

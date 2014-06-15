@@ -9,7 +9,7 @@ def zenify_keybinding(keybinding, text_message)
 end
 
 def zenify_title(title)
-  return "<b><big><span color=\\\"red\\\">#{title}</span>/</big></b>"
+  return "<b><big><span color='red'>#{title}</span></big></b>"
 end
 
 File.open(File.join(ENV['HOME'], '.config/awesome/rc.lua')).each do |line|
@@ -29,5 +29,4 @@ keybindings.each do |key, value|
   result += value.to_a * "\n"
 end
 
-puts result
-`zenity --info --text "#{result}"`
+puts result.strip

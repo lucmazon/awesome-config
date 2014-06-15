@@ -404,19 +404,19 @@ tag_keys = {
     {"t","s","r","n","v","d","l","j"}  -- right screen
 }
 
-view_only_tag = function (screen_number, tag_index)
+view_only_tag = function (screen_number, tag_index) -- # Tags # m-. ** # show tag X
     awful.tag.viewonly(awful.tag.gettags(screen_number)[tag_index])
 end
 
-view_toggle_tag = function (screen_number, tag_index)
+view_toggle_tag = function (screen_number, tag_index) -- # Tags # m-c-. ** # toggle visibility of tag X
     awful.tag.viewtoggle(awful.tag.gettags(screen_number)[tag_index])
 end
 
-move_to_tag = function (screen_number, tag_index)
+move_to_tag = function (screen_number, tag_index) -- # Tags # m-M-. ** # move client to tag X
     awful.client.movetotag(awful.tag.gettags(screen_number)[tag_index])
 end
 
-toggle_tag = function (screen_number, tag_index)
+toggle_tag = function (screen_number, tag_index) -- # Tags # m-c-M-. ** # place client also on tag X
     awful.client.toggletag(awful.tag.gettags(screen_number)[tag_index])
 end
 
@@ -529,7 +529,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey           }, "p", function() awful.util.spawn(gui_editor)            end), -- # Programs # m-p # launch emacs
 
     -- Keybindings
-    awful.key({ modkey, ctrlkey  }, "b", function() naughty.notify({text = awful.util.pread(scriptdir .. "keybindings.rb")}) end), -- # Programs # m-b # launch this popup
+    awful.key({ modkey, ctrlkey  }, "b", function() naughty.notify({position = "top_left", timeout=0, text = awful.util.pread(scriptdir .. "keybindings.rb")}) end), -- # Programs # m-b # launch this popup
 
     awful.key({ }, "XF86AudioRaiseVolume", function()
         awful.util.spawn("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "+")
@@ -572,7 +572,6 @@ globalkeys = awful.util.table.join(
         keygrabber.run(function(mod, key, event)
             if event == "release" then return true end
             keygrabber.stop()
-            naughty.notify({text = "hoho"})
             if move_to_tag_mode[key] then move_to_tag_mode[key](c) end
             return true
         end)

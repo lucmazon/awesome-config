@@ -130,7 +130,7 @@ tyrannical.tags = {
 
 -- Ignore the tag "exclusive" property for the following clients (matched by classes)
 tyrannical.properties.intrusive = {
-    "terminator",
+    "terminator", "xfce4-notifyd", "Xephyr"
 }
 
 -- Ignore the tiled layout for the matching clients
@@ -386,6 +386,22 @@ local bepo_numkeys = {
     -- [0]="asterisk", "quotedbl", "less", "greater", "parenleft", "parenright", "at", "plus", "minus", "slash"
 }
 
+tag_keys = {
+    {"a","u","i","e","b","é","p","o"}, -- left screen
+    {"t","s","r","n","v","d","l","j"}  -- right screen
+}
+
+switch_to_tag = function (screen_number, tag_index)
+    awful.tag.viewonly(awful.tag.gettags(screen_number)[tag_index])
+end
+
+tag_mode = {}
+for screen_number, left_keys in ipairs(tag_keys) do
+    for tag_index, key in ipairs(left_keys) do
+        tag_mode[key] = function(c) switch_to_tag(screen_number,tag_index) end
+    end
+end
+
 globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ), -- # Tags # m-left # next tag
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ), -- # Tags # m-right # previous tag
@@ -493,6 +509,16 @@ globalkeys = awful.util.table.join(
         awful.util.spawn("amixer sset " .. "Headphone" .. " unmute")
         vicious.force({ alsawidget.bar })
         alsawidget.notify()
+    end),
+
+    awful.key({modkey}, "f", function(c)
+        keygrabber.run(function(mod, key, event)
+            if event == "release" then return true end
+            keygrabber.stop()
+            naughty.notify({text = key})
+            if tag_mode[key] then tag_mode[key](c) end
+            return true
+        end)
     end)
 )
 

@@ -26,4 +26,10 @@ utils.file_exists = function (name)
     if f~=nil then io.close(f) return true else return false end
 end
 
+utils.dbg = function (vars)
+    local text = ""
+    for i=1, #vars do text = text .. vars[i] .. " | " end
+    naughty.notify({ text = text, timeout = 0 })
+end
+
 return utils

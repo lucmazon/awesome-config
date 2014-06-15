@@ -1,6 +1,6 @@
 #!/bin/bash
 # If example.rc.lua is missing, make a default one.
-rc_lua=$PWD/../rc.lua
+rc_lua=$HOME/.config/awesome/rc.lua
 test -f $rc_lua || /bin/cp /etc/xdg/awesome/rc.lua $rc_lua
 
 # Just in case we're not running from /usr/bin

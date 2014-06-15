@@ -1,3 +1,5 @@
+-- see this blogpost to change your default sound card: http://ptspts.blogspot.fr/2009/03/how-to-select-alsa-sound-card-and-have.html
+
 volume =
 {
 	channel = "Master",

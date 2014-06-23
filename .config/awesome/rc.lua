@@ -111,6 +111,7 @@ tyrannical.tags = {
         init = true,
         exclusive = true,
         screen = {1,2 },
+        layout = awful.layout.suit.tile,
         class = { "terminator" }
     },
     {
@@ -408,15 +409,15 @@ view_only_tag = function (screen_number, tag_index) -- # Tags # m-. ** # show ta
     awful.tag.viewonly(awful.tag.gettags(screen_number)[tag_index])
 end
 
-view_toggle_tag = function (screen_number, tag_index) -- # Tags # m-c-. ** # toggle visibility of tag X
+view_toggle_tag = function (screen_number, tag_index) -- # Tags # m-x ** # toggle visibility of tag X
     awful.tag.viewtoggle(awful.tag.gettags(screen_number)[tag_index])
 end
 
-move_to_tag = function (screen_number, tag_index) -- # Tags # m-M-. ** # move client to tag X
+move_to_tag = function (screen_number, tag_index) -- # Tags # m-y ** # move client to tag X
     awful.client.movetotag(awful.tag.gettags(screen_number)[tag_index])
 end
 
-toggle_tag = function (screen_number, tag_index) -- # Tags # m-c-M-. ** # place client also on tag X
+toggle_tag = function (screen_number, tag_index) -- # Tags # m-à ** # place client also on tag X
     awful.client.toggletag(awful.tag.gettags(screen_number)[tag_index])
 end
 
@@ -508,13 +509,13 @@ globalkeys = awful.util.table.join(
     -- Prompt
     awful.key({ modkey           }, "o",   function () mypromptbox[mouse.screen]:run() end), -- # Prompt # m-o # run shell command
 
-    awful.key({ modkey           }, "y", -- # Prompt # m-y # run lua code
-        function ()
-            awful.prompt.run({ prompt = "Run Lua code: " },
-                mypromptbox[mouse.screen].widget,
-                awful.util.eval, nil,
-                awful.util.getdir("cache") .. "/history_eval")
-        end),
+--    awful.key({ modkey           }, "y", -- # Prompt # m-y # run lua code
+        -- function ()
+        --     awful.prompt.run({ prompt = "Run Lua code: " },
+        --         mypromptbox[mouse.screen].widget,
+        --         awful.util.eval, nil,
+        --         awful.util.getdir("cache") .. "/history_eval")
+        -- end),
 
     -- Menubar
     awful.key({ modkey           }, "j", function() menubar.show()                     end), -- # Prompt # m-j # show menubar
@@ -560,7 +561,7 @@ globalkeys = awful.util.table.join(
             return true
         end)
     end),
-    awful.key({ modkey, ctrlkey }, ".", function(c)
+    awful.key({ modkey }, "x", function(c)
         keygrabber.run(function(mod, key, event)
             if event == "release" then return true end
             keygrabber.stop()
@@ -568,7 +569,7 @@ globalkeys = awful.util.table.join(
             return true
         end)
     end),
-    awful.key({ modkey, altkey }, ".", function(c)
+    awful.key({ modkey }, "y", function(c)
         keygrabber.run(function(mod, key, event)
             if event == "release" then return true end
             keygrabber.stop()
@@ -576,7 +577,7 @@ globalkeys = awful.util.table.join(
             return true
         end)
     end),
-    awful.key({ modkey, ctrlkey, altkey }, ".", function(c)
+    awful.key({ modkey }, "à", function(c)
         keygrabber.run(function(mod, key, event)
             if event == "release" then return true end
             keygrabber.stop()

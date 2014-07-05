@@ -77,11 +77,25 @@ tyrannical.tags = {
     {
         name = "Browser", -- Call the tag "browser"
         init = true, -- Load the tag on startup
-        screen = 1, -- Create this tag on screen 1
+        screen = {1,2},
         selected = true,
         class = { --Accept the following classes
             "Firefox", "Chromium"
         }
+    },
+    {
+        name = "Dev",
+        init = true,
+        screen = {1,2},
+        layout = awful.layout.suit.tile,
+        class ={ "jetbrains-idea" }
+    },
+    {
+        name = "Term",
+        init = true,
+        screen = {1,2},
+        layout = awful.layout.suit.fair,
+        class = { "terminator" }
     },
     {
         name = "Mail",
@@ -97,7 +111,6 @@ tyrannical.tags = {
     {
         name = "Pidgin",
         init = true,
-        exclusive = true,
         screen = 1,
         layout = awful.layout.suit.tile.left,
         mwfact = 0.8,
@@ -105,37 +118,7 @@ tyrannical.tags = {
         class = {
             "Pidgin"
         }
-    },
-    {
-        name = "Term",
-        init = true,
-        exclusive = true,
-        screen = {1,2 },
-        layout = awful.layout.suit.tile,
-        class = { "terminator" }
-    },
-    {
-        name = "Dev",
-        init = true,
-        exclusive = true,
-        screen = {1,2},
-        layout = awful.layout.suit.tile,
-        class ={
-            "jetbrains-idea"
-        }
-    },
-    {
-        name = "Emacs",
-        init = false, -- This tag wont be created at startup, but will be when one of the
-                             -- client in the "class" section will start. It will be created on
-                             -- the client startup screen
-        volatile = true, -- destroyed when last client is closed
-        exclusive = true,
-        layout = awful.layout.suit.max,
-        class = {
-            "emacs"
-        }
-    },
+    }
 }
 
 -- Ignore the tag "exclusive" property for the following clients (matched by classes)
@@ -145,7 +128,7 @@ tyrannical.properties.intrusive = {
 
 -- Ignore the tiled layout for the matching clients
 tyrannical.properties.floating = {
-
+    "mypaint"
 }
 
 tyrannical.properties.slave = {
@@ -154,7 +137,7 @@ tyrannical.properties.slave = {
 
 -- Make the matching clients (by classes) on top of the default layout
 tyrannical.properties.ontop = {
-    "Xephyr" , "ksnapshot" , "kruler"
+    "Xephyr" , "ksnapshot" , "kruler", "mypaint"
 }
 
 -- Force the matching clients (by classes) to be centered on the screen on init
@@ -458,12 +441,7 @@ globalkeys = awful.util.table.join(
         end), -- # Tags # m-d # delete tag -> only those not registered by tyrannical
     awful.key({ modkey }, "d",      function()
         tag_name = awful.tag.gettags(mouse.screen)[awful.tag.getidx()].name
-        if tyrannical.tags_by_name[tag_name] then
-            naughty.notify({text = "not allowed"})
-        else
-            awful.tag.delete()
-        end
---        awful.tag.delete()
+        awful.tag.delete()
     end), -- # Tags # m-d # delete tag
     awful.key({ modkey }, "t", -- # Clients # m-t # next client
         function ()

@@ -391,7 +391,7 @@ move_to_tag = function (screen_number, tag_index) -- # Tags # m-y ** # move clie
     awful.client.movetotag(awful.tag.gettags(screen_number)[tag_index])
 end
 
-toggle_tag = function (screen_number, tag_index) -- # Tags # m-à ** # place client also on tag X
+toggle_tag = function (screen_number, tag_index) -- # Tags # m-, ** # place client also on tag X
     awful.client.toggletag(awful.tag.gettags(screen_number)[tag_index])
 end
 
@@ -429,11 +429,11 @@ globalkeys = awful.util.table.join(
                         end
                     end
                     )
-        end), -- # Tags # m-d # delete tag -> only those not registered by tyrannical
+        end), -- # Tags # m-d # delete tag
     awful.key({ modkey }, "d",      function()
         tag_name = awful.tag.gettags(mouse.screen)[awful.tag.getidx()].name
         awful.tag.delete()
-    end), -- # Tags # m-d # delete tag
+    end),
     awful.key({ modkey }, "t", -- # Clients # m-t # next client
         function ()
             awful.client.focus.byidx( 1)
@@ -499,7 +499,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey           }, "p", function() awful.util.spawn(gui_editor)            end), -- # Programs # m-p # launch emacs
 
     -- Keybindings
-    awful.key({ modkey, ctrlkey  }, "b", function() naughty.notify({position = "top_left", timeout=0, text = awful.util.pread(scriptdir .. "keybindings.rb")}) end), -- # Programs # m-b # launch this popup
+    awful.key({ modkey,          }, "h", function() naughty.notify({position = "top_left", timeout=0, text = awful.util.pread(scriptdir .. "keybindings.rb")}) end), -- # Programs # m-h # launch this popup
 
     awful.key({ }, "XF86AudioRaiseVolume", function()
         awful.util.spawn("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "+")
@@ -546,7 +546,7 @@ globalkeys = awful.util.table.join(
             return true
         end)
     end),
-    awful.key({ modkey }, "à", function(c)
+    awful.key({ modkey }, ",", function(c)
         keygrabber.run(function(mod, key, event)
             if event == "release" then return true end
             keygrabber.stop()

@@ -70,55 +70,58 @@ local layouts =
 
 -- First, set some settings
 tyrannical.settings.default_layout = awful.layout.suit.tile
-tyrannical.settings.mwfact = 0.70
+tyrannical.settings.mwfact = 0.65
 
 -- Setup some tags
 tyrannical.tags = {
+    -- main gauche
     {
-        name = "Browser", -- Call the tag "browser"
-        init = true, -- Load the tag on startup
-        screen = {1,2},
-        selected = true,
-        class = { --Accept the following classes
-            "Firefox", "Chromium"
-        }
-    },
-    {
-        name = "Dev",
-        init = true,
-        screen = {1,2},
-        layout = awful.layout.suit.tile,
-        class ={ "jetbrains-idea" }
-    },
-    {
-        name = "Term",
-        init = true,
-        screen = {1,2},
-        layout = awful.layout.suit.fair,
-        class = { "terminator" }
-    },
-    {
-        name = "Mail",
-        init = false,
-        exclusive = true,
+        name = "a",
         screen = 1,
-        layout = awful.layout.suit.max,
-        volatile = true,
-        class = {
-            "Thunderbird"
-        }
+        class = {"Firefox", "Chromium"}
     },
     {
-        name = "Pidgin",
-        init = true,
+        name = "u",
         screen = 1,
         layout = awful.layout.suit.tile.left,
         mwfact = 0.8,
         exec_once = {"pidgin"}, --When the tag is accessed for the first time, execute this command
-        class = {
-            "Pidgin"
-        }
-    }
+        class = {"Pidgin"}
+    },
+    {
+        name = "i",
+        screen = 1,
+        layout = awful.layout.suit.max,
+        class = {"Thunderbird"}
+    },
+    {
+        name = "e",
+        screen = 1,
+        layout = awful.layout.suit.fair,
+        class = {"terminator"}
+    },
+    { name = "b", screen = 1 },
+    { name = "é", screen = 1 },
+    { name = "p", screen = 1 },
+    { name = "o", screen = 1 },
+    -- main droite
+    {
+        name = "t",
+        screen = 2,
+        class ={"jetbrains-idea"}
+    },
+    {
+        name = "s",
+        screen = 2,
+        layout = awful.layout.suit.fair,
+        class = {"terminator"}
+    },
+    { name = "r", screen = 2 },
+    { name = "n", screen = 2 },
+    { name = "v", screen = 2 },
+    { name = "d", screen = 2 },
+    { name = "l", screen = 2 },
+    { name = "j", screen = 2 }
 }
 
 -- Ignore the tag "exclusive" property for the following clients (matched by classes)
@@ -145,18 +148,6 @@ tyrannical.properties.centered = {
     "kcalc"
 }
 
--- }}}
-
--- {{{ Tags
--- Define a tag table which hold all screen tags.
---tags = {
---    names = { "⠂", "⠆", "⠒", "⠲", "⠢", "⠖", "⠶", "⠦", "⠔" },
---    layout = { layouts[3], layouts[3], layouts[3], layouts[6] }
---}
---for s = 1, screen.count() do
---    -- Each screen has its own tag table.
---    tags[s] = awful.tag(tags.names, s, tags.layout)
---end
 -- }}}
 
 
@@ -186,7 +177,7 @@ require("widgets.temp")
 require("widgets.fs")
 require("widgets.battery")
 require("widgets.volume")
-if machine.machine == 'work' then require("widgets.hudson") end
+--if machine.machine == 'work' then require("widgets.hudson") end
 -- }}}
 
 -- Separators
@@ -282,10 +273,10 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(spacewidget)
-    if machine.machine == "work" then
-        right_layout:add(arrl)
-        right_layout:add(hudsonwidget)
-    end
+--    if machine.machine == "work" then
+--        right_layout:add(arrl)
+--        right_layout:add(hudsonwidget)
+--    end
     right_layout:add(arrl)
     right_layout:add(spacewidget)
     right_layout:add(volume.bar)
@@ -605,8 +596,6 @@ awful.rules.rules = {
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
     { rule = { class = "pinentry" },
-      properties = { floating = true } },
-    { rule = { class = "gimp" },
       properties = { floating = true } },
     { rule = { class = "zenity" },
       properties = { floating = true } },

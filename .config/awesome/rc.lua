@@ -106,22 +106,22 @@ tyrannical.tags = {
     { name = "o", screen = 1 },
     -- main droite
     {
-        name = "t",
+        name = "a",
         screen = 2,
         class ={"jetbrains-idea"}
     },
     {
-        name = "s",
+        name = "u",
         screen = 2,
         layout = awful.layout.suit.fair,
         class = {"terminator"}
     },
-    { name = "r", screen = 2 },
-    { name = "n", screen = 2 },
-    { name = "v", screen = 2 },
-    { name = "d", screen = 2 },
-    { name = "l", screen = 2 },
-    { name = "j", screen = 2 }
+    { name = "i", screen = 2 },
+    { name = "e", screen = 2 },
+    { name = "b", screen = 2 },
+    { name = "é", screen = 2 },
+    { name = "p", screen = 2 },
+    { name = "o", screen = 2 }
 }
 
 -- Ignore the tag "exclusive" property for the following clients (matched by classes)
@@ -374,38 +374,33 @@ local bepo_numkeys = {
     -- [0]="asterisk", "quotedbl", "less", "greater", "parenleft", "parenright", "at", "plus", "minus", "slash"
 }
 
-tag_keys = {
-    {"a","u","i","e","b","é","p","o"}, -- left screen
-    {"t","s","r","n","v","d","l","j"}  -- right screen
-}
+tag_keys = {"a","u","i","e","b","é","p","o"}
 
-view_only_tag = function (screen_number, tag_index) -- # Tags # m-. ** # show tag X
-    awful.tag.viewonly(awful.tag.gettags(screen_number)[tag_index])
+view_only_tag = function (tag_index) -- # Tags # m-. ** # show tag X
+    awful.tag.viewonly(awful.tag.gettags(mouse.screen)[tag_index])
 end
 
-view_toggle_tag = function (screen_number, tag_index) -- # Tags # m-x ** # toggle visibility of tag X
-    awful.tag.viewtoggle(awful.tag.gettags(screen_number)[tag_index])
+view_toggle_tag = function (tag_index) -- # Tags # m-x ** # toggle visibility of tag X
+    awful.tag.viewtoggle(awful.tag.gettags(mouse.screen)[tag_index])
 end
 
-move_to_tag = function (screen_number, tag_index) -- # Tags # m-y ** # move client to tag X
-    awful.client.movetotag(awful.tag.gettags(screen_number)[tag_index])
+move_to_tag = function (tag_index) -- # Tags # m-y ** # move client to tag X
+    awful.client.movetotag(awful.tag.gettags(mouse.screen)[tag_index])
 end
 
-toggle_tag = function (screen_number, tag_index) -- # Tags # m-, ** # place client also on tag X
-    awful.client.toggletag(awful.tag.gettags(screen_number)[tag_index])
+toggle_tag = function (tag_index) -- # Tags # m-, ** # place client also on tag X
+    awful.client.toggletag(awful.tag.gettags(mouse.screen)[tag_index])
 end
 
 view_only_tag_mode = {}
 view_toggle_tag_mode = {}
 move_to_tag_mode = {}
 toggle_tag_mode = {}
-for screen_number, left_keys in ipairs(tag_keys) do
-    for tag_index, key in ipairs(left_keys) do
-        view_only_tag_mode[key] = function(c) view_only_tag(screen_number,tag_index) end
-        view_toggle_tag_mode[key] = function(c) view_toggle_tag(screen_number,tag_index) end
-        move_to_tag_mode[key] = function(c) move_to_tag(screen_number,tag_index) end
-        toggle_tag_mode[key] = function(c) toggle_tag(screen_number,tag_index) end
-    end
+for tag_index, key in ipairs(tag_keys) do
+    view_only_tag_mode[key] = function(c) view_only_tag(tag_index) end
+    view_toggle_tag_mode[key] = function(c) view_toggle_tag(tag_index) end
+    move_to_tag_mode[key] = function(c) move_to_tag(tag_index) end
+    toggle_tag_mode[key] = function(c) toggle_tag(tag_index) end
 end
 
 globalkeys = awful.util.table.join(

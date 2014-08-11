@@ -131,7 +131,7 @@ tyrannical.properties.intrusive = {
 
 -- Ignore the tiled layout for the matching clients
 tyrannical.properties.floating = {
-    "mypaint"
+    "mypaint", "gnome-do"
 }
 
 tyrannical.properties.slave = {
@@ -140,7 +140,7 @@ tyrannical.properties.slave = {
 
 -- Make the matching clients (by classes) on top of the default layout
 tyrannical.properties.ontop = {
-    "Xephyr" , "ksnapshot" , "kruler", "mypaint"
+    "Xephyr" , "ksnapshot" , "kruler", "mypaint", "gnome-do"
 }
 
 -- Force the matching clients (by classes) to be centered on the screen on init
@@ -471,7 +471,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, ctrlkey  }, "'",                              awful.client.restore), -- # Standard # m-C-' # restore client
 
     -- Prompt
-    awful.key({ modkey           }, "o",   function () mypromptbox[mouse.screen]:run() end), -- # Prompt # m-o # run shell command
+--    awful.key({ modkey           }, "o",   function () mypromptbox[mouse.screen]:run() end),
 
 --    awful.key({ modkey           }, "y", -- # Prompt # m-y # run lua code
         -- function ()
@@ -491,7 +491,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, ctrlkey  }, "q", function() awful.util.spawn(scriptdir .. "shutdown_dialog") end), -- # System # m-C-q # shutdown dialog
 
     -- Editor (gui)
-    awful.key({ modkey           }, "p", function() awful.util.spawn(gui_editor)            end), -- # Programs # m-p # launch emacs
+    awful.key({ modkey           }, "o", function() awful.util.spawn('gnome-do')            end), -- # Programs # m-o # gnome-do
 
     -- Keybindings
     awful.key({ modkey,          }, "h", function() naughty.notify({position = "top_left", timeout=0, text = awful.util.pread(scriptdir .. "keybindings.rb")}) end), -- # Programs # m-h # launch this popup

@@ -294,8 +294,9 @@ for s = 1, screen.count() do
     right_layout:add(fshicon)
     right_layout:add(fshwidget)
     right_layout:add(arrl_dl)
-    right_layout:add(baticon)
-    right_layout:add(batwidget)
+    right_layout:add(batterywidget)
+    -- right_layout:add(baticon)
+    -- right_layout:add(batwidget)
     right_layout:add(arrl)
     right_layout:add(spacewidget)
     right_layout:add(mytextclock)
@@ -497,24 +498,29 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,          }, "h", function() naughty.notify({position = "top_left", timeout=0, text = awful.util.pread(scriptdir .. "keybindings.rb")}) end), -- # Programs # m-h # launch this popup
 
     awful.key({ }, "XF86AudioRaiseVolume", function()
-        awful.util.spawn("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "+")
-        vicious.force({ alsawidget.bar })
-        alsawidget.notify()
+        awful.util.spawn("amixer sset " .. volume.channel .. " " .. volume.step .. "+")
+        vicious.force({ volume.bar })
+        volume.notify()
         end),
     awful.key({ }, "XF86AudioLowerVolume", function()
-        awful.util.spawn("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "-")
-        vicious.force({ alsawidget.bar })
-        alsawidget.notify()
+        awful.util.spawn("amixer sset " .. volume.channel .. " " .. volume.step .. "-")
+        vicious.force({ volume.bar })
+        volume.notify()
     end),
     awful.key({ }, "XF86AudioMute", function()
-        awful.util.spawn("amixer sset " .. alsawidget.channel .. " toggle")
+        awful.util.spawn("amixer sset " .. volume.channel .. " toggle")
         -- The 2 following lines were needed at least on my configuration, otherwise it would get stuck muted
         awful.util.spawn("amixer sset " .. "Speaker" .. " unmute")
         awful.util.spawn("amixer sset " .. "Headphone" .. " unmute")
-        vicious.force({ alsawidget.bar })
-        alsawidget.notify()
+        vicious.force({ volume.bar })
+        volume.notify()
     end),
-
+    awful.key({ }, "XF86MonBrightnessDown", function()
+	  awful.util.spawn("xbacklight -dec 10")
+    end),
+    awful.key({ }, "XF86MonBrightnessUp", function()
+	  awful.util.spawn("xbacklight -inc 10")
+    end),
 
     -- KEYGRABBER - Modal keybinding
     awful.key({ modkey }, ".", function(c)

@@ -75,47 +75,17 @@ tyrannical.settings.mwfact = 0.65
 -- Setup some tags
 tyrannical.tags = {
     -- main gauche
-    {
-        name = "a",
-        screen = 1,
-        class = {"Firefox", "Chromium"}
-    },
-    {
-        name = "u",
-        screen = 1,
-        layout = awful.layout.suit.tile.left,
-        mwfact = 0.8,
-        exec_once = {"pidgin"}, --When the tag is accessed for the first time, execute this command
-        class = {"Pidgin"}
-    },
-    {
-        name = "i",
-        screen = 1,
-        layout = awful.layout.suit.max,
-        class = {"Thunderbird"}
-    },
-    {
-        name = "e",
-        screen = 1,
-        layout = awful.layout.suit.fair,
-        class = {"terminator"}
-    },
+    { name = "a", screen = 1 },
+    { name = "u", screen = 1, layout = awful.layout.suit.tile.left, mwfact = 0.8 },
+    { name = "i", screen = 1, layout = awful.layout.suit.max },
+    { name = "e", screen = 1, layout = awful.layout.suit.fair },
     { name = "b", screen = 1 },
     { name = "é", screen = 1 },
     { name = "p", screen = 1 },
     { name = "o", screen = 1 },
     -- main droite
-    {
-        name = "a",
-        screen = 2,
-        class ={"jetbrains-idea"}
-    },
-    {
-        name = "u",
-        screen = 2,
-        layout = awful.layout.suit.fair,
-        class = {"terminator"}
-    },
+    { name = "a", screen = 2 },
+    { name = "u", screen = 2, layout = awful.layout.suit.fair },
     { name = "i", screen = 2 },
     { name = "e", screen = 2 },
     { name = "b", screen = 2 },
@@ -131,11 +101,11 @@ tyrannical.properties.intrusive = {
 
 -- Ignore the tiled layout for the matching clients
 tyrannical.properties.floating = {
-    "mypaint", "gnome-do"
+    "mypaint", "gnome-do", "gitk", "meld"
 }
 
 tyrannical.properties.slave = {
-    "terminator"
+    "terminator", "gnome-do"
 }
 
 -- Make the matching clients (by classes) on top of the default layout

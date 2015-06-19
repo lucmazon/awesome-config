@@ -75,16 +75,16 @@ tyrannical.settings.mwfact = 0.65
 -- Setup some tags
 tyrannical.tags = {
     -- main gauche
-    { name = "a", screen = 1 },
-    { name = "u", screen = 1, layout = awful.layout.suit.tile.left, mwfact = 0.8 },
-    { name = "i", screen = 1, layout = awful.layout.suit.max },
+   { name = "a", screen = 1, class = { "Firefox", "Chromium-browser", "hipchat" } },
+   { name = "u", screen = 1, class = { "Pidgin" }, exec_once = { "pidgin" }, layout = awful.layout.suit.tile.left, mwfact = 0.8 },
+   { name = "i", screen = 1, class = { "Thunderbird" }, layout = awful.layout.suit.max },
     { name = "e", screen = 1, layout = awful.layout.suit.fair },
     { name = "b", screen = 1 },
     { name = "é", screen = 1 },
     { name = "p", screen = 1 },
     { name = "o", screen = 1 },
     -- main droite
-    { name = "a", screen = 2 },
+    { name = "a", screen = 2, class = { "jetbrains-idea" } },
     { name = "u", screen = 2, layout = awful.layout.suit.fair },
     { name = "i", screen = 2 },
     { name = "e", screen = 2 },

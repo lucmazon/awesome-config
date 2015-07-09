@@ -17,11 +17,13 @@ tyrannical = require("tyrannical")
 -- local
 utils = require("settings.utils")
 require("settings.errors")
-machine = require("settings.machine")
+properties = require("settings.properties")
+machine = properties.machine
+main_screen = properties.main_screen
 -- }}}
 
 -- {{{ Autostart
-require("settings/autostart" .. machine.suffix)
+require("settings/autostart-" .. machine)
 -- }}}
 
 
@@ -74,43 +76,33 @@ tyrannical.settings.mwfact = 0.65
 
 -- Setup some tags
 tyrannical.tags = {
-    -- main gauche
-   { name = "a", screen = 1, class = { "Firefox", "Chromium-browser", "hipchat" } },
-   { name = "u", screen = 1, class = { "Pidgin" }, exec_once = { "pidgin" }, layout = awful.layout.suit.tile.left, mwfact = 0.8 },
-   { name = "i", screen = 1, class = { "Thunderbird" }, layout = awful.layout.suit.max },
-    { name = "e", screen = 1, layout = awful.layout.suit.fair },
-    { name = "b", screen = 1 },
-    { name = "é", screen = 1 },
-    { name = "p", screen = 1 },
-    { name = "o", screen = 1 },
-    -- main droite
-    { name = "a", screen = 2, class = { "jetbrains-idea" } },
-    { name = "u", screen = 2, layout = awful.layout.suit.fair },
-    { name = "i", screen = 2 },
-    { name = "e", screen = 2 },
-    { name = "b", screen = 2 },
-    { name = "é", screen = 2 },
-    { name = "p", screen = 2 },
-    { name = "o", screen = 2 }
+   { name = "a", screen = {1, 2}, class = { "Firefox", "Chromium-browser", "hipchat" } },
+   { name = "u", screen = {1, 2}, class = { "Pidgin" }, exec_once = { "pidgin" }, layout = awful.layout.suit.tile.left, mwfact = 0.8 },
+   { name = "i", screen = {1, 2}, class = { "Thunderbird" }, layout = awful.layout.suit.max },
+   { name = "e", screen = {1, 2}, class = { "jetbrains-idea" }, layout = awful.layout.suit.fair },
+   { name = "b", screen = {1, 2} },
+   { name = "é", screen = {1, 2} },
+   { name = "p", screen = {1, 2} },
+   { name = "o", screen = {1, 2} }
 }
 
 -- Ignore the tag "exclusive" property for the following clients (matched by classes)
 tyrannical.properties.intrusive = {
-    "terminator", "xfce4-notifyd", "Xephyr"
+    "terminator", "xfce4-notifyd", "Xephyr", "Do"
 }
 
 -- Ignore the tiled layout for the matching clients
 tyrannical.properties.floating = {
-    "mypaint", "gnome-do", "gitk", "meld"
+    "mypaint", "Do", "gitk", "meld", "sun-awt-X11-XDialogPeer"
 }
 
 tyrannical.properties.slave = {
-    "terminator", "gnome-do"
+    "terminator", "Do"
 }
 
 -- Make the matching clients (by classes) on top of the default layout
 tyrannical.properties.ontop = {
-    "Xephyr" , "ksnapshot" , "kruler", "mypaint", "gnome-do"
+    "Xephyr" , "ksnapshot" , "kruler", "mypaint", "Do"
 }
 
 -- Force the matching clients (by classes) to be centered on the screen on init
@@ -147,8 +139,6 @@ require("widgets.temp")
 require("widgets.fs")
 require("widgets.battery")
 require("widgets.volume")
---if machine.machine == 'work' then require("widgets.hudson") end
--- }}}
 
 -- Separators
 spacewidget = wibox.widget.textbox(' ')
@@ -241,12 +231,8 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the upper right
     local right_layout = wibox.layout.fixed.horizontal()
-    if s == 1 then right_layout:add(wibox.widget.systray()) end
+    if s == tonumber(main_screen) then right_layout:add(wibox.widget.systray()) end
     right_layout:add(spacewidget)
---    if machine.machine == "work" then
---        right_layout:add(arrl)
---        right_layout:add(hudsonwidget)
---    end
     right_layout:add(arrl)
     right_layout:add(spacewidget)
     right_layout:add(volume.bar)
@@ -265,8 +251,6 @@ for s = 1, screen.count() do
     right_layout:add(fshwidget)
     right_layout:add(arrl_dl)
     right_layout:add(batterywidget)
-    -- right_layout:add(baticon)
-    -- right_layout:add(batwidget)
     right_layout:add(arrl)
     right_layout:add(spacewidget)
     right_layout:add(mytextclock)

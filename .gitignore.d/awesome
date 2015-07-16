@@ -1,5 +1,3 @@
 *
-*.iml
-local.properties
-.idea/*
+!/.gitignore.d/awesome
 !/.config/awesome/

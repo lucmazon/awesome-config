@@ -1,3 +1,10 @@
-*
+/*
+
+#FOLDERS
+!.config/
+.config/*
+!.config/awesome/
+
+#FILES
+.config/awesome/local.properties
 !/.gitignore.d/awesome
-!/.config/awesome/
